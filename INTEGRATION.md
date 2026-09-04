@@ -43,12 +43,22 @@ excludes `.claude`, so anything placed there is untracked.
 
 See the audit in the session that produced this file. The short version:
 
-1. `caveman` and `ponytail` both want the single `statusLine` key in
-   `settings.json`. Only one can own it; the loser nudges every session.
-2. `normal mode` deactivates both of them at once. Use `stop caveman` or
-   `stop ponytail` to turn off exactly one.
-3. The `skills` fork ships a `code-review` skill whose name collides with the
-   built-in one, so the fork's version stays shadowed and unreachable.
-4. `tdd` (from the fork) and `ponytail` disagree about how much test code is
-   warranted. `ponytail` already carves out an exception for anything the user
-   explicitly asks for, which is what settles it in practice.
+1. **`ponytail` has no natural-language activation.** Its mode tracker only
+   matches a `/ponytail` slash prefix (`/^[/@$]ponytail/`), while its
+   *deactivation* does accept plain English. `caveman` accepts both. So
+   "normal mode" turns both off, and "activate caveman and ponytail" brings
+   only `caveman` back. `ponytail` stays silently off until someone types
+   `/ponytail`. This is the asymmetry most likely to bite.
+2. `caveman` and `ponytail` both want the single `statusLine` key in
+   `settings.json`. Only one can own it. `caveman`'s installer yields to an
+   existing value and prints a note; `ponytail` nudges every session instead.
+3. `normal mode` deactivates both at once. `stop caveman` and `stop ponytail`
+   were verified to affect only their own flag, so use those to turn off one.
+4. The `skills` fork ships a `code-review` skill whose name collides with the
+   built-in one, so the fork's version stays shadowed and unreachable. 14 of
+   its 15 model-invoked skills register; this is the missing one.
+
+Not a conflict, though it looks like one: `tdd` and `ponytail` agree on test
+volume. `tdd` tests "only at pre-agreed seams" and says outright that you
+can't test everything. The two differ only in form, `tdd` running a
+red-green loop where `ponytail` wants a single assert-based check.
